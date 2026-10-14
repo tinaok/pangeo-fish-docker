@@ -12,7 +12,7 @@ FROM pangeo/pangeo-notebook:${PANGEO_NOTEBOOK_TAG}
 
 ARG PANGEO_NOTEBOOK_TAG
 ARG PANGEO_FISH_REPO=https://github.com/tinaok/pangeo-fish.git
-ARG PANGEO_FISH_REF=fix/healpix-coastal-fallback
+ARG PANGEO_FISH_REF=3c500425b743f98f16f28856dd67aaf9f19a52b2
 ARG PYTHON_VERSION=3.11
 # If pangeo-fish (or a dependency) pulls in torch, use the CPU-only wheels
 # (CUDA wheels add several GB)

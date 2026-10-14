@@ -22,7 +22,7 @@ on:
         required: false
         default: ""
       pangeo_fish_ref:
-        description: "pangeo-fish fork branch, tag or commit (empty = coastal fix)"
+        description: "pangeo-fish fork branch, tag or commit (empty = IBI + coastal fixes)"
         required: false
         default: ""
 
@@ -58,9 +58,9 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Keep the workshop base image while testing the fork's coastal fix.
+          # Keep the workshop base image and pin the validated IBI/coastal source.
           notebook_tag="${INPUT_NOTEBOOK_TAG:-2026.06.04}"
-          fish_ref="${INPUT_FISH_REF:-${PAYLOAD_SHA:-fix/healpix-coastal-fallback}}"
+          fish_ref="${INPUT_FISH_REF:-${PAYLOAD_SHA:-3c500425b743f98f16f28856dd67aaf9f19a52b2}}"
           fish_sha=$(git ls-remote "$PANGEO_FISH_REPO" "refs/heads/$fish_ref" "refs/tags/$fish_ref" | head -n1 | cut -f1)
           # not a branch or tag: assume it is already a commit SHA
           fish_sha="${fish_sha:-$fish_ref}"
@@ -145,6 +145,10 @@ jobs:
             -v "$PWD/tests:/tmp/coastal-tests:ro" "$IMAGE:$IMAGE_TAG" \
             /srv/conda/envs/pangeo-fish/bin/python \
             /tmp/coastal-tests/smoke_coastal_regrid.py "$FISH_SHA"
+          docker run --rm --entrypoint "" \
+            -v "$PWD/tests:/tmp/ibi-tests:ro" "$IMAGE:$IMAGE_TAG" \
+            /srv/conda/envs/pangeo-fish/bin/python \
+            /tmp/ibi-tests/smoke_copernicus_ibi.py
           docker run --rm --entrypoint "" "$IMAGE:$IMAGE_TAG" \
             jupyter kernelspec list | tee /dev/stderr | grep -q pangeo-fish
 
