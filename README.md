@@ -1,16 +1,16 @@
-# Coastal-fix workshop image
+# IBI reanalysis workshop image
 
-This fork builds the workshop image from `tinaok/pangeo-fish`, branch
-`fix/healpix-coastal-fallback`, based on upstream `clement-eosc-image` at
-`aae6eb8`. The `pangeo/pangeo-notebook:2026.06.04` base stays the same.
+This fork builds the workshop image from `tinaok/pangeo-fish` at
+`3c500425b743f98f16f28856dd67aaf9f19a52b2` (`fix/copernicus-ibi-split-datasets`). It extends the
+coastal HEALPix fix at `e5777cc`, retaining the workshop base
+`pangeo/pangeo-notebook:2026.06.04` and the existing dependency declarations.
 
-Published images use `ghcr.io/tinaok/pangeo-fish-notebook:<base>-<fish-sha>`.
-The build resolves and labels the exact source commit, verifies the coastal
-HEALPix fallback inside the image, and pushes it to GHCR after the smoke tests.
-Run the **Build and publish image** workflow manually on
-`fix/coastal-workshop-image` to build this configuration before merging it.
-
-Companion source fix: https://github.com/tinaok/pangeo-fish/pull/2
+Image: `ghcr.io/tinaok/pangeo-fish-notebook:2026.06.04-3c50042`.
+The build verifies the exact source commit, coastal regridding and mocked IBI
+split-dataset loading inside the image before publishing to GHCR.
+The IBI smoke test needs neither credentials nor network access.
+Run **Build and publish image** on `fix/copernicus-ibi-workshop-image` to
+build this configuration before merging it.
 
 # pangeo-fish-docker
 
