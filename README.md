@@ -3,7 +3,7 @@
 This fork builds the workshop image from `tinaok/pangeo-fish` at
 `3c500425b743f98f16f28856dd67aaf9f19a52b2` (`fix/copernicus-ibi-split-datasets`). It extends the
 coastal HEALPix fix at `e5777cc`, retaining the workshop base
-`pangeo/pangeo-notebook:2026.06.04` and all dependency versions.
+`pangeo/pangeo-notebook:2026.06.04` and the existing dependency declarations.
 
 Image: `ghcr.io/tinaok/pangeo-fish-notebook:2026.06.04-3c50042`.
 The build verifies the exact source commit, coastal regridding and mocked IBI
