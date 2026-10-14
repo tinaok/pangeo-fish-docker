@@ -7,12 +7,12 @@
 # triggers only fire for direct children. They do NOT fire here, so this
 # Dockerfile has to do everything explicitly.
 
-ARG PANGEO_NOTEBOOK_TAG=latest
+ARG PANGEO_NOTEBOOK_TAG=2026.06.04
 FROM pangeo/pangeo-notebook:${PANGEO_NOTEBOOK_TAG}
 
 ARG PANGEO_NOTEBOOK_TAG
-ARG PANGEO_FISH_REPO=https://github.com/pangeo-fish/pangeo-fish.git
-ARG PANGEO_FISH_REF=main
+ARG PANGEO_FISH_REPO=https://github.com/tinaok/pangeo-fish.git
+ARG PANGEO_FISH_REF=fix/healpix-coastal-fallback
 ARG PYTHON_VERSION=3.11
 # If pangeo-fish (or a dependency) pulls in torch, use the CPU-only wheels
 # (CUDA wheels add several GB)
@@ -25,7 +25,7 @@ ENV PANGEO_FISH_ENV=pangeo-fish \
     PANGEO_FISH_SRC=/srv/pangeo-fish
 ENV PANGEO_FISH_PREFIX=${CONDA_DIR}/envs/${PANGEO_FISH_ENV}
 
-LABEL org.opencontainers.image.source="https://github.com/pangeo-fish/pangeo-fish-docker" \
+LABEL org.opencontainers.image.source="https://github.com/tinaok/pangeo-fish-docker" \
       org.opencontainers.image.description="pangeo-notebook with a pangeo-fish Jupyter kernel" \
       org.opencontainers.image.licenses="GPL-3.0-only" \
       io.github.pangeo-fish.pangeo-notebook-tag="${PANGEO_NOTEBOOK_TAG}"

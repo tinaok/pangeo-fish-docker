@@ -4,7 +4,6 @@ on:
   # changes to the Dockerfile / workflow in this repository
   push:
     branches: [main]
-  pull_request:
   # daily check for a new pangeo-notebook release or a new pangeo-fish commit
   schedule:
     - cron: "0 4 * * *"
@@ -19,11 +18,11 @@ on:
         type: boolean
         default: false
       pangeo_notebook_tag:
-        description: "pangeo/pangeo-notebook tag (empty = latest release)"
+        description: "pangeo/pangeo-notebook tag (empty = 2026.06.04)"
         required: false
         default: ""
       pangeo_fish_ref:
-        description: "pangeo-fish branch, tag or commit (empty = main)"
+        description: "pangeo-fish fork branch, tag or commit (empty = coastal fix)"
         required: false
         default: ""
 
@@ -37,7 +36,7 @@ permissions:
 
 env:
   IMAGE: ghcr.io/${{ github.repository_owner }}/pangeo-fish-notebook
-  PANGEO_FISH_REPO: https://github.com/pangeo-fish/pangeo-fish.git
+  PANGEO_FISH_REPO: https://github.com/tinaok/pangeo-fish.git
 
 jobs:
   resolve:
@@ -59,16 +58,9 @@ jobs:
         run: |
           set -euo pipefail
 
-          notebook_tag="${INPUT_NOTEBOOK_TAG:-}"
-          if [ -z "$notebook_tag" ]; then
-            # latest dated release, e.g. 2026.06.04 (ignores "master" and commit-SHA tags)
-            notebook_tag=$(curl -fsSL 'https://hub.docker.com/v2/repositories/pangeo/pangeo-notebook/tags?page_size=100&ordering=last_updated' \
-              | jq -r '.results[].name' \
-              | grep -E '^[0-9]{4}\.[0-9]{2}\.[0-9]{2}$' \
-              | sort -V | tail -n1)
-          fi
-
-          fish_ref="${INPUT_FISH_REF:-${PAYLOAD_SHA:-main}}"
+          # Keep the workshop base image while testing the fork's coastal fix.
+          notebook_tag="${INPUT_NOTEBOOK_TAG:-2026.06.04}"
+          fish_ref="${INPUT_FISH_REF:-${PAYLOAD_SHA:-fix/healpix-coastal-fallback}}"
           fish_sha=$(git ls-remote "$PANGEO_FISH_REPO" "refs/heads/$fish_ref" "refs/tags/$fish_ref" | head -n1 | cut -f1)
           # not a branch or tag: assume it is already a commit SHA
           fish_sha="${fish_sha:-$fish_ref}"
@@ -134,6 +126,7 @@ jobs:
         run: |
           docker build \
             --build-arg PANGEO_NOTEBOOK_TAG="$NOTEBOOK_TAG" \
+            --build-arg PANGEO_FISH_REPO="$PANGEO_FISH_REPO" \
             --build-arg PANGEO_FISH_REF="$FISH_SHA" \
             --label org.opencontainers.image.source="${{ github.server_url }}/${{ github.repository }}" \
             --label org.opencontainers.image.revision="${{ github.sha }}" \
@@ -148,6 +141,10 @@ jobs:
         run: |
           docker run --rm --entrypoint "" "$IMAGE:$IMAGE_TAG" \
             /srv/conda/envs/pangeo-fish/bin/python -c "import importlib.metadata as m, pangeo_fish, pangeo_fish.helpers; print(pangeo_fish.__file__, m.version('pangeo-fish'))"
+          docker run --rm --entrypoint "" \
+            -v "$PWD/tests:/tmp/coastal-tests:ro" "$IMAGE:$IMAGE_TAG" \
+            /srv/conda/envs/pangeo-fish/bin/python \
+            /tmp/coastal-tests/smoke_coastal_regrid.py "$FISH_SHA"
           docker run --rm --entrypoint "" "$IMAGE:$IMAGE_TAG" \
             jupyter kernelspec list | tee /dev/stderr | grep -q pangeo-fish
 

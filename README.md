@@ -1,3 +1,17 @@
+# Coastal-fix workshop image
+
+This fork builds the workshop image from `tinaok/pangeo-fish`, branch
+`fix/healpix-coastal-fallback`, based on upstream `clement-eosc-image` at
+`aae6eb8`. The `pangeo/pangeo-notebook:2026.06.04` base stays the same.
+
+Published images use `ghcr.io/tinaok/pangeo-fish-notebook:<base>-<fish-sha>`.
+The build resolves and labels the exact source commit, verifies the coastal
+HEALPix fallback inside the image, and pushes it to GHCR after the smoke tests.
+Run the **Build and publish image** workflow manually on
+`fix/coastal-workshop-image` to build this configuration before merging it.
+
+Companion source fix: https://github.com/tinaok/pangeo-fish/pull/2
+
 # pangeo-fish-docker
 
 Docker image = [`pangeo/pangeo-notebook`](https://github.com/pangeo-data/pangeo-docker-images)
